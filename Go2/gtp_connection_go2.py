@@ -32,6 +32,7 @@ class GtpConnectionGo2(gtp_connection.GtpConnection):
         self.argmap["go_safe"] = (1, 'Usage: go_safe {w,b}')
         self.commands["timelimit"] = self.timelimit_cmd
         self.argmap["timelimit"] = (1, 'Usage: timelimit INT [1,100]')
+        self.commands["solve"] = self.solve_cmd
 
         # initialize defaults
         self.timelimit = 1
@@ -59,3 +60,9 @@ class GtpConnectionGo2(gtp_connection.GtpConnection):
             return
 
         self.timelimit = args_0
+        return
+
+    # compute the winner of the current position, assuming perfect play by both,
+    # within the current time limit.
+    def solve_cmd(self, args):
+        self.respond(self.go_engine.solve(self.board, self))

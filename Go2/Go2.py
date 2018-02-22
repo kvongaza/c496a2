@@ -37,6 +37,9 @@ class Go2():
     def get_move(self,board, color):
         return GoBoardUtil.generate_random_move(board,color,True)
 
+    def solve(self, board, connection):
+        return
+
 
 def run():
     """
