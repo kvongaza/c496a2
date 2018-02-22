@@ -30,6 +30,11 @@ class GtpConnectionGo2(gtp_connection.GtpConnection):
         gtp_connection.GtpConnection.__init__(self, go_engine, board, outfile, debug_mode)
         self.commands["go_safe"] = self.safety_cmd
         self.argmap["go_safe"] = (1, 'Usage: go_safe {w,b}')
+        self.commands["timelimit"] = self.timelimit_cmd
+        self.argmap["timelimit"] = (1, 'Usage: timelimit INT [1,100]')
+
+        # initialize defaults
+        self.timelimit = 1
 
     def safety_cmd(self, args):
         try:
@@ -42,3 +47,15 @@ class GtpConnectionGo2(gtp_connection.GtpConnection):
             self.respond(safety_points)
         except Exception as e:
             self.respond('Error: {}'.format(str(e)))
+
+    # sets the maximum time to use for all following genmove or solve commands
+    def timelimit_cmd(self, args):
+        try:
+            args_0 = int(args[0])
+            if (1 > args_0 or args_0 > 100):
+                raise
+        except:
+            print(self.argmap["timelimit"][1])
+            return
+
+        self.timelimit = args_0
