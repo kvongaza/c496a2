@@ -1,4 +1,4 @@
-#!/Library/Frameworks/Python.framework/Versions/3.6/bin/python3
+#! /usr/bin/python3
 # Set the path to your python3 above
 
 # Modified by Kiefer von Gaza and Jonah Quist
@@ -33,39 +33,39 @@ class Go2():
         """
         self.name = "Go2"
         self.version = 0.1
-        self.max_depth = 1
+        self.max_depth = 4
+        self.nega_moves = []
 
     def get_move(self,board, color):
         return GoBoardUtil.generate_random_move(board,color,True)
 
     def solve(self, board, connection):
-        win, move = self.negamax(board, 1, 0)
-        return
+        self.nega_moves = []
+        best = self.negamax(board, board.current_player, 0)
+        moves_repr = list(map(str, self.nega_moves))
+        return '|'.join(moves_repr)
 
     def negamax(self, board, color, depth):
-        if depth == self.max_depth:
-            winner, val = board.score(self.komi) #komi goes here, idk where it is right now
-            if winner == color:
-                return True, None
-            return False, None
-        if GoBoardUtil.generate_random_move(board, color, True) is None:
-            winner, val = board.score()
-            if winner == color:
-                return True, None
-            return False, None
+        if depth == self.max_depth or  GoBoardUtil.generate_random_move(board, color, True) is None:
+            winner, score = board.score(self.komi)  # komi goes here, idk where it is right now
+            return score
         moves = GoBoardUtil.generate_legal_moves(board, color).split(' ')
+        best = -float('Inf')
+        best_m = None
         for _m in moves:
             m = GoBoardUtil.move_to_coord(_m, board.size)
             m = m[0] * board.size + m[1] + 3
-            old_board = SimpleGoBoard(board.size); # this is the busted part
+            old_board = SimpleGoBoard(board.size)
             old_board = GoBoardUtil.copyb2b(board, old_board)
             board.move(m, color)
-            success = not self.negamax(board, color, depth + 1)
+            value = -self.negamax(board, GoBoardUtil.opponent(color), depth + 1)
             # board.undo_move()
             board = GoBoardUtil.copyb2b(old_board, board)
-            if success:
-                return True, m
-        return False, None
+            if value > best:
+                best = value
+                best_m = _m
+        self.nega_moves.insert(0, best_m)
+        return best
 
 
 def run():

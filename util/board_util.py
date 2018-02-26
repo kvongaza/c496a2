@@ -135,7 +135,7 @@ class GoBoardUtil(object):
     def opponent(color):
         opponent = {WHITE:BLACK, BLACK:WHITE} 
         try:
-            return opponent[color]    
+            return opponent[color]
         except:
             raise ValueError("Wrong color provided for opponent function")
             
