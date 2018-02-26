@@ -45,20 +45,21 @@ class Go2():
 
     def negamax(self, board, color, depth):
         if depth == self.max_depth:
-            winner, val = board.score()
-            winner_c = GoBoardUtil.int_to_color(winner)
-            if winner_c == color:
+            winner, val = board.score(0) #komi goes here, idk where it is right now
+            if winner == color:
                 return True, None
             return False, None
         if GoBoardUtil.generate_random_move(board, color, True) is None:
             winner, val = board.score()
-            winner_c = GoBoardUtil.int_to_color(winner)
-            if winner_c == color:
+            if winner == color:
                 return True, None
             return False, None
         moves = GoBoardUtil.generate_legal_moves(board, color).split(' ')
         for _m in moves:
-            m = GoBoardUtil.move_to_coord(_m, 7)
+            m = GoBoardUtil.move_to_coord(_m, board.size)
+            m = m[0] * board.size + m[1] + 3
+            #old_board = None; # this is the busted part
+            #GoBoardUtil.copyb2b(board, old_board)
             board.move(m, color)
             success = not self.negamax(board, color, depth + 1)
             board.undo_move()
