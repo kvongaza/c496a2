@@ -44,7 +44,7 @@ class Go2():
 
     def negamax(self, board, color, depth):
         if depth == self.max_depth:
-            winner, val = board.score(0) #komi goes here, idk where it is right now
+            winner, val = board.score(self.komi) #komi goes here, idk where it is right now
             if winner == color:
                 return True, None
             return False, None
