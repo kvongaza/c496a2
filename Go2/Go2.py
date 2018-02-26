@@ -33,25 +33,34 @@ class Go2():
         """
         self.name = "Go2"
         self.version = 0.1
+        self.max_depth = 1
 
     def get_move(self,board, color):
         return GoBoardUtil.generate_random_move(board,color,True)
 
     def solve(self, board, connection):
-
+        win, move = self.negamax(board, 1, 0)
+        print(win, move)
         return
 
-    def negamax(self, board, color):
-        # atm this doesnt do depth, not really sure how to make it do that
+    def negamax(self, board, color, depth):
+        if depth == self.max_depth:
+            winner, val = board.score()
+            winner_c = GoBoardUtil.int_to_color(winner)
+            if winner_c == color:
+                return True, None
+            return False, None
         if GoBoardUtil.generate_random_move(board, color, True) is None:
             winner, val = board.score()
             winner_c = GoBoardUtil.int_to_color(winner)
             if winner_c == color:
                 return True, None
             return False, None
-        for m in GoBoardUtil.generate_legal_moves(board, color):
+        moves = GoBoardUtil.generate_legal_moves(board, color).split(' ')
+        for _m in moves:
+            m = GoBoardUtil.move_to_coord(_m, 7)
             board.move(m, color)
-            success = not self.negamax(board, color)
+            success = not self.negamax(board, color, depth + 1)
             board.undo_move()
             if success:
                 return True, m
