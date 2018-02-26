@@ -40,7 +40,6 @@ class Go2():
 
     def solve(self, board, connection):
         win, move = self.negamax(board, 1, 0)
-        print(win, move)
         return
 
     def negamax(self, board, color, depth):
@@ -58,11 +57,12 @@ class Go2():
         for _m in moves:
             m = GoBoardUtil.move_to_coord(_m, board.size)
             m = m[0] * board.size + m[1] + 3
-            #old_board = None; # this is the busted part
-            #GoBoardUtil.copyb2b(board, old_board)
+            old_board = SimpleGoBoard(board.size); # this is the busted part
+            old_board = GoBoardUtil.copyb2b(board, old_board)
             board.move(m, color)
             success = not self.negamax(board, color, depth + 1)
-            board.undo_move()
+            # board.undo_move()
+            board = GoBoardUtil.copyb2b(old_board, board)
             if success:
                 return True, m
         return False, None
