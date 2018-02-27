@@ -34,53 +34,46 @@ class Go2():
         self.name = "Go2"
         self.version = 0.1
         self.max_depth = 5
-        self.nega_moves = []
         self.win = None
-        self.searcher = None
 
     def get_move(self,board, color):
         return GoBoardUtil.generate_random_move(board,color,True)
 
     def solve(self, board, connection):
-        self.nega_moves = [None] * self.max_depth
         self.win = None
-        self.searcher = board.current_player
-        best = self.negamax(board, board.current_player, 0)
-        moves_repr = list(map(str, self.nega_moves))
+        _, best = self.negamax(board, board.current_player, 0)
+        best = board._point_to_coord(best)
         if self.win is not None:
             return GoBoardUtil.int_to_color(self.win)
-        return '|'.join(moves_repr)
+        return GoBoardUtil.int_to_color(board.current_player) + ' '+  GoBoardUtil.format_point(best)
 
     def negamax(self, board, color, depth):
         if depth == self.max_depth:
             winner, score = board.score(self.komi)
             if winner == color:
-                return score
+                return True, None
             else:
-                return -score 
-        if GoBoardUtil.generate_random_move(board, color, True) is None:
+                return False, None
+        if board.end_of_game():
             winner, score = board.score(self.komi)
             self.win = color
             if winner == color:
-                return score
+                return True, None
             else:
-                return -score 
-        moves = GoBoardUtil.generate_legal_moves(board, color).split(' ')
-        best = -float('Inf')
-        best_m = None
+                return False, None
+        moves = GoBoardUtil.generate_legal_moves(board, color).strip().split(' ')
         for _m in moves:
             m = GoBoardUtil.move_to_coord(_m, board.size)
-            m = (board.NS) * m[0] + m[1]
-            moved = board.move(m, color)
-            if moved:
-                value = -self.negamax(board, GoBoardUtil.opponent(color), depth + 1)
-                board.undo_move()
-            if value > best:
-                best = value
-                best_m = _m
-        if self.searcher == color:
-            self.nega_moves[depth] = GoBoardUtil.int_to_color(color) + ' ' + best_m
-        return best
+            m = board._coord_to_point(m[0], m[1])
+            if board.is_eye(m, color):
+                continue
+            board.move(m, color)
+            value, _ = self.negamax(board, GoBoardUtil.opponent(color), depth + 1)
+            value = not value
+            board.undo_move()
+            if value:
+                return True, m
+        return False, None
 
 
 def run():
