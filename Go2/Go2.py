@@ -34,7 +34,6 @@ class Go2():
         self.name = "Go2"
         self.version = 0.1
         self.max_depth = 5
-        self.win = None
         self.startTime = 0.0
         self.timeElapsed = 0.0
         self.timedOut = False
@@ -43,21 +42,19 @@ class Go2():
         return GoBoardUtil.generate_random_move(board,color,True)
 
     def solve(self, board, connection):
-        self.win = None
         self.startTime = time.process_time()
         self.timedOut = False
         winnable, best = self.negamax(board, board.current_player, 0, connection)
         if not winnable:
             return GoBoardUtil.int_to_color(GoBoardUtil.opponent(board.current_player))
-        if best is None:
-            return GoBoardUtil.format_point(best)
-        best = board._point_to_coord(best)
+        if not best:
+            best = GoBoardUtil.format_point(best)
+        else:
+            best = GoBoardUtil.format_point(board._point_to_coord(best))
         # Unsure of how to deal with this
         if self.timedOut:
-            return(False, "Unknown")
-        if self.win is not None:
-            return GoBoardUtil.int_to_color(self.win)
-        return GoBoardUtil.int_to_color(board.current_player) + ' ' +  GoBoardUtil.format_point(best)
+            return 'Unknown'
+        return GoBoardUtil.int_to_color(board.current_player) + ' ' + best
 
     def negamax(self, board, color, depth, connection):
         timeElapsed = time.process_time() -  self.startTime
@@ -73,7 +70,6 @@ class Go2():
                 return False, None
         if board.end_of_game():
             winner, score = board.score(self.komi)
-            self.win = color
             if winner == color:
                 return True, None
             else:
