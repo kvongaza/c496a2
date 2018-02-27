@@ -51,17 +51,14 @@ class Go2():
 
     def solve(self, board, connection):
         self.win = None
-<<<<<<< HEAD
         self.startTime = time.process_time()
         self.timedOut = False
         _, best = self.negamax(board, board.current_player, 0, connection)
-=======
-        winnable, best = self.negamax(board, board.current_player, 0)
+        winnable, best = self.negamax(board, board.current_player, 0, connection)
         if not winnable:
             return GoBoardUtil.int_to_color(GoBoardUtil.opponent(board.current_player))
         if best is None:
             return GoBoardUtil.format_point(best)
->>>>>>> 332c9fa3108b1a7f6a6befc898fc2e55fd63b65e
         best = board._point_to_coord(best)
         # Unsure of how to deal with this
         if self.timedOut:
