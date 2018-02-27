@@ -42,13 +42,6 @@ class Go2():
     def get_move(self,board, color):
         return GoBoardUtil.generate_random_move(board,color,True)
 
-    def withinTime(self, startTime, connection):
-        self.timeUsed = time.process_time() - startTime
-        if self.timeUsed <= connection.timelimit:
-            return True
-        else:
-            return False
-
     def solve(self, board, connection):
         self.win = None
         self.startTime = time.process_time()

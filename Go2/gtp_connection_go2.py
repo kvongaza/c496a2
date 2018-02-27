@@ -60,6 +60,7 @@ class GtpConnectionGo2(gtp_connection.GtpConnection):
             return
 
         self.timelimit = args_0
+        self.respond()
         return
 
     # compute the winner of the current position, assuming perfect play by both,
