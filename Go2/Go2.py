@@ -41,11 +41,15 @@ class Go2():
 
     def solve(self, board, connection):
         self.win = None
-        _, best = self.negamax(board, board.current_player, 0)
+        winnable, best = self.negamax(board, board.current_player, 0)
+        if not winnable:
+            return GoBoardUtil.int_to_color(GoBoardUtil.opponent(board.current_player))
+        if best is None:
+            return GoBoardUtil.format_point(best)
         best = board._point_to_coord(best)
         if self.win is not None:
             return GoBoardUtil.int_to_color(self.win)
-        return GoBoardUtil.int_to_color(board.current_player) + ' '+  GoBoardUtil.format_point(best)
+        return GoBoardUtil.int_to_color(board.current_player) + ' ' +  GoBoardUtil.format_point(best)
 
     def negamax(self, board, color, depth):
         if depth == self.max_depth:
