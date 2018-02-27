@@ -1,4 +1,4 @@
-#!/Library/Frameworks/Python.framework/Versions/3.6/bin/python3
+#!/usr/bin/python3
 # Set the path to your python3 above
 
 # Modified by Kiefer von Gaza and Jonah Quist
@@ -46,7 +46,6 @@ class Go2():
         self.win = None
         self.startTime = time.process_time()
         self.timedOut = False
-        _, best = self.negamax(board, board.current_player, 0, connection)
         winnable, best = self.negamax(board, board.current_player, 0, connection)
         if not winnable:
             return GoBoardUtil.int_to_color(GoBoardUtil.opponent(board.current_player))
