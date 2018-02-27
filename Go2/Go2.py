@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#!/Library/Frameworks/Python.framework/Versions/3.6/bin/python3
 # Set the path to your python3 above
 
 # Modified by Kiefer von Gaza and Jonah Quist
@@ -10,7 +10,7 @@
 #       genmove
 
 # Set up relative path for util; sys.path[0] is directory of current program
-import os, sys
+import os, sys, time
 utilpath = sys.path[0] + "/../util/"
 sys.path.append(utilpath)
 
@@ -35,19 +35,39 @@ class Go2():
         self.version = 0.1
         self.max_depth = 5
         self.win = None
+        self.startTime = 0.0
+        self.timeElapsed = 0.0
+        self.timedOut = False
 
     def get_move(self,board, color):
         return GoBoardUtil.generate_random_move(board,color,True)
 
+    def withinTime(self, startTime, connection):
+        self.timeUsed = time.process_time() - startTime
+        if self.timeUsed <= connection.timelimit:
+            return True
+        else:
+            return False
+
     def solve(self, board, connection):
         self.win = None
-        _, best = self.negamax(board, board.current_player, 0)
+        self.startTime = time.process_time()
+        self.timedOut = False
+        _, best = self.negamax(board, board.current_player, 0, connection)
         best = board._point_to_coord(best)
+        # Unsure of how to deal with this
+        if self.timedOut:
+            return(False, "Unknown")
         if self.win is not None:
             return GoBoardUtil.int_to_color(self.win)
         return GoBoardUtil.int_to_color(board.current_player) + ' '+  GoBoardUtil.format_point(best)
 
-    def negamax(self, board, color, depth):
+    def negamax(self, board, color, depth, connection):
+        timeElapsed = time.process_time() -  self.startTime
+        if timeElapsed > connection.timelimit:
+            self.timedOut = True
+            return False, None
+
         if depth == self.max_depth:
             winner, score = board.score(self.komi)
             if winner == color:
@@ -68,7 +88,7 @@ class Go2():
             if board.is_eye(m, color):
                 continue
             board.move(m, color)
-            value, _ = self.negamax(board, GoBoardUtil.opponent(color), depth + 1)
+            value, _ = self.negamax(board, GoBoardUtil.opponent(color), depth + 1, connection)
             value = not value
             board.undo_move()
             if value:
